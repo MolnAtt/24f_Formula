@@ -87,28 +87,61 @@ namespace _24f_Formula
 
 			public HashSet<Formula> Atomjai() // Hány különböző "betűből" épül fel! (ne legyen duplázódás)
 			{
+				if (this.gyerekei.Count == 0)
+					return new HashSet<Formula> { this };
 
+				HashSet<Formula> result = this.gyerekei[0].Atomjai();
+				for (int i = 1; i < this.gyerekei.Count; i++)
+					result.UnionWith(this.gyerekei[i].Atomjai());
+
+				return result;
 			}
 
 			public int Mélység() // hány emelet magas a fa
 			{
+				if (this.gyerekei.Count == 0)
+					return 0;
 
+				int max = this.gyerekei[0].Mélység();
+
+				for (int i = 1; i < this.gyerekei.Count; i++)
+				{
+					int n = this.gyerekei[i].Mélység();
+					if (max < n)
+					{
+						max = n;
+					}
+				}
+
+				return 1 + max;
 			}
 
+			public int Mélység2() => gyerekei.Count == 0 ? 0 : 1 + gyerekei.Max(x => x.Mélység2());
 
 			public HashSet<Formula> Részformulái() // A fában található összes részformula halmaza
 			{
+				if (this.gyerekei.Count == 0)
+					return new HashSet<Formula> { this };
 
+				HashSet<Formula> result = this.gyerekei[0].Részformulái();
+				for (int i = 1; i < this.gyerekei.Count; i++)
+					result.UnionWith(this.gyerekei[i].Részformulái());
+
+				result.Add(this);
+				return result;
+			}
+
+			public HashSet<Formula> Részformulái2() // A fában található összes részformula halmaza
+			{
+				HashSet<Formula> result = new HashSet<Formula> { this };
+				foreach (Formula gyerek in this.gyerekei)
+					result.UnionWith(gyerek.Részformulái2());
+
+				return result;
 			}
 
 
-
-
-
 		}
-
-
-
 
 		static void Main(string[] args)
 		{
@@ -125,12 +158,16 @@ namespace _24f_Formula
 
 			// (A ∧ B ) →¬(C ∨ D)
 
-			Formula f = (A * B) > -(C + D);
+			Formula f = (A * B) > -(A + D);
 
 
 			Console.WriteLine(f);
 
 			Console.WriteLine(f.Negaciok_szama());
+
+			Console.WriteLine(string.Join(", ", f.Atomjai()));
+			Console.WriteLine(string.Join(", ", f.Részformulái()));
+			Console.WriteLine(string.Join(", ", f.Részformulái2()));
 
 		}
 	}
