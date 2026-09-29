@@ -169,6 +169,26 @@ namespace _24f_Formula
 			Console.WriteLine(string.Join(", ", f.Részformulái()));
 			Console.WriteLine(string.Join(", ", f.Részformulái2()));
 
+
+			Formula i = new Formula("I");
+			Formula j = new Formula("J");
+			Formula k = new Formula("K");
+			Formula a = new Formula("A");
+			Formula e = new Formula("E");
+			Formula o = new Formula("Ó");
+
+			Formula legfeljebb_egy_igaz = (-i * -j * -k) + (i * -j * -k) + (-i * j * -k) + (-i * -j * k);
+			Formula valahol_van = (a * -e * -o) + (-a * e * -o) + (-a * -e * o);
+			Formula elso = i == a;
+			Formula masodik = j == -e;
+			Formula harmadik = k == -a;
+
+			Formula együtt = legfeljebb_egy_igaz * valahol_van * elso * masodik * harmadik;
+
+			együtt.Hogyan_lehet_igaz();
+
+
+
 		}
 	}
 }
