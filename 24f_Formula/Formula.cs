@@ -7,73 +7,6 @@ using System.Threading.Tasks;
 
 namespace _24f_Formula
 {
-
-	class Popper<T>
-	{
-		// A tulajdonságait te találod ki
-
-		/// <summary>
-		/// Megadja, hogy hány elem van jelenleg a popperben.
-		/// </summary>
-		public int Count { get => -1; } // terajtad múlik
-
-		/// <summary>
-		/// Létrehoz egy üres poppert.
-		/// </summary>
-		public Popper()
-		{
-			// ???
-		}
-
-		/// <summary>
-		/// Létrehoz egy poppert egy másik popper elemei alapján (egy másolatot).
-		/// </summary>
-		public Popper(Popper<T> popper)
-		{
-			// ???
-		}
-
-		/// <summary>
-		/// Hozzáad egy elemet a popperhez.
-		/// </summary>
-		/// <param name="elem">a hozzáadott elem</param>
-		public void Push(T elem)
-		{
-			// ???
-		}
-
-		/// <summary>
-		/// Kivesz a popperből egy elemet. (Te dönthetsz, hogy melyiket)
-		/// </summary>
-		/// <returns>Az elem, amit kivesz és visszaad</returns>
-		public T Pop()
-		{
-			// ???
-		}
-
-
-		/// <summary>
-		/// Létrehoz egy új poppert, ami a régi popper elemeit tartalmazza és még az elemet, amit hozzáadunk.
-		/// </summary>
-		/// <param name="elem">a hozzáadandó elem</param>
-		/// <param name="popper">a popper</param>
-		/// <returns>Egy vadi új popper, </returns>
-		public static Popper<T> operator +(T elem, Popper<T> popper)
-		{
-			/// ???
-		}
-		/// <summary>
-		/// Létrehoz egy új poppert, ami a régi popper elemeit tartalmazza és még a két új elemet (az elempár tagjait), amit hozzáadunk.
-		/// </summary>
-		/// <param name="elempar"></param>
-		/// <param name="popper"></param>
-		/// <returns></returns>
-		public static Popper<T> operator +((T, T) elempar, Popper<T> popper)
-		{
-			/// ???
-		}
-
-	}
 	internal class Formula
 	{
 		string muvelet;
@@ -234,75 +167,175 @@ namespace _24f_Formula
 		public static bool Kielégíthető(HashSet<Formula> formulahalmaz) => 0 < Modelljei(formulahalmaz).Count;
 		public static bool Ellentmondás(HashSet<Formula> formulahalmaz) => !Kielégíthető(formulahalmaz);
 		public bool Ellentmondás() => Ellentmondás(new HashSet<Formula> { this });
-		public bool Logikai_igazság() => Ellentmondás(-this);
+		public bool Logikai_igazság() => (-this).Ellentmondás();
 
 		public static HashSet<Dictionary<Formula, bool>> Modelljei(HashSet<Formula> formulahalmaz)
 		{
-			throw new NotImplementedException();
+			Popper<Formula> formulák = new Popper<Formula>(formulahalmaz);
+			HashSet<Formula> po = new HashSet<Formula>();
+			HashSet<Formula> ne = new HashSet<Formula>();
+			HashSet<Dictionary<Formula, bool>> modellek = new HashSet<Dictionary<Formula, bool>>();
+
+			bool kielegitheto = AnFa(formulák, po, ne, modellek);
+
+			// mire lefut az AnFa algoritmus, feltölti az eleinte üres modellhalmazt!
+
+			return modellek;
 		}
 		static Dictionary<Formula, bool> Értékelés_literálokból(HashSet<Formula> pozitív_literálok, HashSet<Formula> negatív_literálok)
 		{
-			throw new NotImplementedException();
+			Dictionary<Formula, bool> modell = new Dictionary<Formula, bool>();
+
+			foreach (Formula literal in pozitív_literálok)
+				modell[literal] = true;
+			foreach (Formula literal in negatív_literálok)
+				modell[literal] = false;
+
+			return modell;
 		}
 
 		static bool AnFa(
 			Popper<Formula> formulák,
 			HashSet<Formula> po,
 			HashSet<Formula> ne,
-			HashSet<Dictionary<Formula, bool>> értékelések)
+			HashSet<Dictionary<Formula, bool>> modellek)
 		{
 			// Ha üres a popper
 			if (formulák.Count == 0)
 			{
-				értékelések.Add(Értékelés_literálokból(po, ne));
+				modellek.Add(Értékelés_literálokból(po, ne));
 				return true;
 			}
+
+			// HA nem üres a popper, tehát van még tennivaló...
 
 			Formula f = formulák.Pop();
 
 			// Ha a formula egy p vagy -p alakú literál
 			// ha pozitív literál (pl. p)
-			if (f.Atomi())
+			if (f.Pozitív_literál())
 			{
-				throw new NotImplementedException();
+				if (ne.Contains(-f))
+					return false;
+				po.Add(f);
+
+				return AnFa(
+					new Popper<Formula>(formulák), 
+					new HashSet<Formula>(po), 
+					new HashSet<Formula>(ne), 
+					modellek); // mivel nem újat hozunk létre, az analitikus fa összes csomópontja ugyanazt a halmazt fogja használni!
 			}
 			// ha negatív literál (pl. -p)
 			if (f.Negatív_literál())
 			{
-				throw new NotImplementedException();
+				if (po.Contains(f.gyerekei[0]))
+					return false;
+				ne.Add(f);
+
+				return AnFa(
+					new Popper<Formula>(formulák),
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek); // mivel nem újat hozunk létre, az analitikus fa összes csomópontja ugyanazt a halmazt fogja használni!
 			}
 
 			// Ha ezek egyike sem, de nem - jellel kezdődik (nem tagadott)
 
-			if (f.művelet == '&')
+			if (f.muvelet == "&")
+				return AnFa((f.gyerekei[0], f.gyerekei[1]) + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek);
+			if (f.muvelet == "V")
+				return AnFa(f.gyerekei[0] + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek)
+					||
+					AnFa(f.gyerekei[1] + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek);
+			if (f.muvelet == "->")
+				return AnFa(-f.gyerekei[0] + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek)
+					||
+					AnFa(f.gyerekei[1] + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek); if (f.muvelet == "<->")
 				throw new NotImplementedException();
-			if (f.művelet == 'V')
-				throw new NotImplementedException();
-			if (f.művelet == '->')
-				throw new NotImplementedException();
-			if (f.művelet == '<->')
-				throw new NotImplementedException();
-			if (f.művelet == '><')
-				throw new NotImplementedException();
+			if (f.muvelet == "<->")
+				return AnFa((f.gyerekei[0], f.gyerekei[1]) + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek)
+					||
+					AnFa((-f.gyerekei[0], -f.gyerekei[1]) + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek);
+			if (f.muvelet == "><")
+				return AnFa((-f.gyerekei[0], f.gyerekei[1]) + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek)
+					||
+					AnFa((f.gyerekei[0], -f.gyerekei[1]) + formulák,
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek);
+
 			// Ha viszont tagadva van...
-			if (f.művelet == '-')
+			if (f.muvelet == "-")
 			{
 				Formula tf = f.gyerekei[0];
 				// és azon belül...
-				if (tf.művelet == '-')
+				if (tf.muvelet == "-")
+					return AnFa(tf.gyerekei[0] + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek);
+				if (tf.muvelet == "&")
+					return AnFa(-tf.gyerekei[0] + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek)
+						||
+						AnFa(-tf.gyerekei[1] + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek);
+				if (tf.muvelet == "V")
+					return AnFa((-tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek); if (tf.muvelet == "->")
 					throw new NotImplementedException();
-				if (tf.művelet == '&')
-					throw new NotImplementedException();
-				if (tf.művelet == 'V')
-					throw new NotImplementedException();
-				if (tf.művelet == '->')
-					throw new NotImplementedException();
-				if (tf.művelet == '<->')
-					throw new NotImplementedException();
-				if (tf.művelet == '><')
-					throw new NotImplementedException();
+				if (tf.muvelet == "<->")
+					return AnFa((-tf.gyerekei[0], tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek)
+						||
+						AnFa((tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek); 
+				if (tf.muvelet == "><")
+					return AnFa((tf.gyerekei[0], tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek)
+						||
+						AnFa((-tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek);
 			}
-			throw new NotImplementedException($"Ez a konnektívum nincs implementálva: {f.művelet}");
+			throw new NotImplementedException($"Ez a konnektívum nincs implementálva: {f.muvelet}");
 		}
 	}
 }

@@ -18,6 +18,12 @@ namespace _24f_Formula
 		{
 			this.tarolo = new List<T>(popper.tarolo);
 		}
+
+		public Popper(HashSet<T> formulahalmaz)
+		{
+			this.tarolo = formulahalmaz.ToList();
+		}
+
 		public void Push(T elem)
 		{
 			tarolo.Add(elem);
