@@ -194,6 +194,20 @@ namespace _24f_Formula
 			return modell;
 		}
 
+		public static void Modellek_kiirasa(HashSet<Dictionary<Formula, bool>> modellek)
+		{
+			int i = 1;
+			foreach (Dictionary<Formula,bool> szotar in modellek)
+			{
+				Console.WriteLine($"{i}. modell:");
+				foreach (Formula literal in szotar.Keys)
+				{
+					Console.WriteLine($"{literal}: {(szotar[literal]?"i":"h")}");
+				}
+				Console.WriteLine("-----------------------------------");
+			}
+		}
+
 		static bool AnFa(
 			Popper<Formula> formulák,
 			HashSet<Formula> po,
@@ -265,8 +279,7 @@ namespace _24f_Formula
 					AnFa(f.gyerekei[1] + formulák,
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
-					modellek); if (f.muvelet == "<->")
-				throw new NotImplementedException();
+					modellek); 
 			if (f.muvelet == "<->")
 				return AnFa((f.gyerekei[0], f.gyerekei[1]) + formulák,
 					new HashSet<Formula>(po),

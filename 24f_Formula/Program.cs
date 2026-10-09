@@ -10,6 +10,22 @@ namespace _24f_Formula
 	{
 		static void Main(string[] args)
 		{
+			Formula p = new Formula("p");
+			Formula q = new Formula("q");
+			Formula r = new Formula("r");
+
+			Formula f1 = p > (-q * r);
+			Formula f2 = (p + q) * -(-p + r);
+			Formula f3 = r == (p+-q);
+
+			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2, f3 });
+			HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2 });
+
+
+			Formula.Modellek_kiirasa(modellek);
+
+			return;
+
 			//Popper<int> popper = new Popper();
 			//Popper<int> ujpopper = 4 + popper;
 			//Popper<int> vadiujpopper = (4,5) + popper;
