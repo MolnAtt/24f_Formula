@@ -13,14 +13,22 @@ namespace _24f_Formula
 			Formula p = new Formula("p");
 			Formula q = new Formula("q");
 			Formula r = new Formula("r");
+			Formula t = new Formula("t");
 
-			Formula f1 = p > (-q * r);
-			Formula f2 = (p + q) * -(-p + r);
-			Formula f3 = r == (p+-q);
+			// Itt az első kettőből kijön egy ellentmondás
+			//Formula f1 = p > (-q * r);
+			//Formula f2 = (p + q) * -(-p + r);
+			//Formula f3 = r == (p+-q);
 
-			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2, f3 });
-			HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2 });
 
+			// Ez nem ellentmondásos: 
+			Formula f1 = -p + (r == (q * -t));
+			Formula f2 = -((p + r) > -(q + t));
+			Formula f3 = -(p == (-q > r));
+
+
+			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2 });
+			HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2, f3 });
 
 			Formula.Modellek_kiirasa(modellek);
 

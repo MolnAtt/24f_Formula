@@ -37,7 +37,7 @@ namespace _24f_Formula
 		public static Formula operator >(Formula A, Formula B)
 			=> new Formula("->", new List<Formula> { A, B });
 		public static Formula operator <(Formula A, Formula B)
-			=> new Formula("<-", new List<Formula> { B, A });
+			=> new Formula("->", new List<Formula> { B, A });
 		public static Formula operator ==(Formula A, Formula B)
 			=> new Formula("<->", new List<Formula> { B, A });
 		public static Formula operator !=(Formula A, Formula B)
@@ -196,11 +196,14 @@ namespace _24f_Formula
 
 		public static void Modellek_kiirasa(HashSet<Dictionary<Formula, bool>> modellek)
 		{
+			
+			Console.WriteLine($"A begyűjtött modellek száma: {modellek.Count} \n (A modellek többször is szerepelhetnek, ha több ágon fordultak elő)");
 			int i = 1;
 			foreach (Dictionary<Formula,bool> szotar in modellek)
 			{
-				Console.WriteLine($"{i}. modell:");
-				foreach (Formula literal in szotar.Keys)
+				List<Formula> kulcsok = szotar.Keys.OrderBy(atom => atom.muvelet).ToList();
+				Console.WriteLine($"{i++}. modell:");
+				foreach (Formula literal in kulcsok)
 				{
 					Console.WriteLine($"{literal}: {(szotar[literal]?"i":"h")}");
 				}
@@ -227,30 +230,39 @@ namespace _24f_Formula
 
 			// Ha a formula egy p vagy -p alakú literál
 			// ha pozitív literál (pl. p)
+
 			if (f.Pozitív_literál())
 			{
-				if (ne.Contains(-f))
+				if (ne.Contains(f))
 					return false;
-				po.Add(f);
 
-				return AnFa(
-					new Popper<Formula>(formulák), 
-					new HashSet<Formula>(po), 
-					new HashSet<Formula>(ne), 
-					modellek); // mivel nem újat hozunk létre, az analitikus fa összes csomópontja ugyanazt a halmazt fogja használni!
-			}
-			// ha negatív literál (pl. -p)
-			if (f.Negatív_literál())
-			{
-				if (po.Contains(f.gyerekei[0]))
-					return false;
-				ne.Add(f);
+				po.Add(f);
 
 				return AnFa(
 					new Popper<Formula>(formulák),
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
 					modellek); // mivel nem újat hozunk létre, az analitikus fa összes csomópontja ugyanazt a halmazt fogja használni!
+			}
+
+
+
+
+			// ha negatív literál (pl. -p)
+			if (f.Negatív_literál())
+			{
+				Formula atom = f.gyerekei[0];
+
+				if (po.Contains(atom))
+					return false;
+
+				ne.Add(atom);
+
+				return AnFa(
+					new Popper<Formula>(formulák),
+					new HashSet<Formula>(po),
+					new HashSet<Formula>(ne),
+					modellek);
 			}
 
 			// Ha ezek egyike sem, de nem - jellel kezdődik (nem tagadott)
@@ -265,7 +277,7 @@ namespace _24f_Formula
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
 					modellek)
-					||
+					|
 					AnFa(f.gyerekei[1] + formulák,
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
@@ -275,7 +287,7 @@ namespace _24f_Formula
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
 					modellek)
-					||
+					|
 					AnFa(f.gyerekei[1] + formulák,
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
@@ -285,7 +297,7 @@ namespace _24f_Formula
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
 					modellek)
-					||
+					|
 					AnFa((-f.gyerekei[0], -f.gyerekei[1]) + formulák,
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
@@ -295,7 +307,7 @@ namespace _24f_Formula
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
 					modellek)
-					||
+					|
 					AnFa((f.gyerekei[0], -f.gyerekei[1]) + formulák,
 					new HashSet<Formula>(po),
 					new HashSet<Formula>(ne),
@@ -316,7 +328,7 @@ namespace _24f_Formula
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
 						modellek)
-						||
+						|
 						AnFa(-tf.gyerekei[1] + formulák,
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
@@ -325,14 +337,18 @@ namespace _24f_Formula
 					return AnFa((-tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
-						modellek); if (tf.muvelet == "->")
-					throw new NotImplementedException();
+						modellek); 
+				if (tf.muvelet == "->")
+					return AnFa((tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
+						new HashSet<Formula>(po),
+						new HashSet<Formula>(ne),
+						modellek);
 				if (tf.muvelet == "<->")
 					return AnFa((-tf.gyerekei[0], tf.gyerekei[1]) + formulák,
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
 						modellek)
-						||
+						|
 						AnFa((tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
@@ -342,13 +358,37 @@ namespace _24f_Formula
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
 						modellek)
-						||
+						|
 						AnFa((-tf.gyerekei[0], -tf.gyerekei[1]) + formulák,
 						new HashSet<Formula>(po),
 						new HashSet<Formula>(ne),
 						modellek);
 			}
 			throw new NotImplementedException($"Ez a konnektívum nincs implementálva: {f.muvelet}");
+		}
+
+		public override bool Equals(object obj)
+		{
+			Formula f = obj as Formula;
+
+			if (f is null)
+				return false;
+
+			return muvelet == f.muvelet
+				&& gyerekei.SequenceEqual(f.gyerekei);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hash = muvelet.GetHashCode();
+
+				foreach (Formula gyerek in gyerekei)
+					hash = hash * 31 + gyerek.GetHashCode();
+
+				return hash;
+			}
 		}
 	}
 }
