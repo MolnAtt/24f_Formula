@@ -197,15 +197,15 @@ namespace _24f_Formula
 		public static void Modellek_kiirasa(HashSet<Dictionary<Formula, bool>> modellek)
 		{
 			
-			Console.WriteLine($"A begyűjtött modellek száma: {modellek.Count} \n (A modellek többször is szerepelhetnek, ha több ágon fordultak elő)");
+			Console.WriteLine($"A begyűjtött modellek száma: {modellek.Count} db \n (A modellek többször is szerepelhetnek, ha több ágon fordultak elő)");
 			int i = 1;
 			foreach (Dictionary<Formula,bool> szotar in modellek)
 			{
 				List<Formula> kulcsok = szotar.Keys.OrderBy(atom => atom.muvelet).ToList();
-				Console.WriteLine($"{i++}. modell:");
+				Console.WriteLine($"{i++}. modell:");				
 				foreach (Formula literal in kulcsok)
 				{
-					Console.WriteLine($"{literal}: {(szotar[literal]?"i":"h")}");
+					Console.WriteLine($"{literal}: {(szotar[literal] ? "i" : "h")}");
 				}
 				Console.WriteLine("-----------------------------------");
 			}
