@@ -24,6 +24,74 @@ namespace _24f_Formula
 			this.gyerekei = new List<Formula>();
 		}
 
+
+		static string Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(string input)
+		{
+			if (input[0]!='(' || input[input.Length-1]!=')')
+				return "(" + input + ")";
+
+			string belseje = input.Substring(1, input.Length - 2);
+
+			int m = 0;
+			int db0 = 0;
+
+			foreach (char k in belseje)
+			{
+				if (k == '(')
+					m++;
+				if (k == ')')
+					m--;
+				if (m < 0)
+					throw new Exception("Ez nem egy helyes zárójelezés! Megnyitatlan zárójel van!");
+				if (m==0)
+				{
+					db0++;
+				}
+			}
+			if (0<m)
+				throw new Exception("Ez nem egy helyes zárójelezés! Bezáratlan nyitójel!");
+
+			return db0 == 1 ? input : "(" + input + ")";
+		}
+
+		private static (string, int) Beolvas(string input, int i)
+		{
+			
+			if ("()*+->=".Contains(input[i]))
+				return (input[i].ToString(), i + 1);
+
+			int honnan = i;
+
+			while (!"()*+->=".Contains(input[i]))
+			{
+				i++;
+			}
+			return (input.Substring(honnan, i - honnan), i);
+		}
+
+		private static Stack<string> Tolatóudvar(string input)
+		{
+			Stack<string> output = new Stack<string>();
+			Stack<string> opverem = new Stack<string>();
+
+			input = input.Trim();
+			input = Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(input);
+			input = input.Replace(" ", "");
+
+			int i = 0;
+			string adat;
+			while (i<input.Length)
+			{
+				(adat, i) = Beolvas(input, i);
+
+				// innen folytatjuk. 
+			}
+
+
+
+			return output;
+		}
+
 		public static Formula operator -(Formula A)
 			=> new Formula("-", new List<Formula> { A });
 		public static Formula operator *(Formula A, Formula B)

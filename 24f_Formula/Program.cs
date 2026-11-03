@@ -10,10 +10,10 @@ namespace _24f_Formula
 	{
 		static void Main(string[] args)
 		{
-			Formula p = new Formula("p");
-			Formula q = new Formula("q");
-			Formula r = new Formula("r");
-			Formula t = new Formula("t");
+			//Formula p = new Formula("p");
+			//Formula q = new Formula("q");
+			//Formula r = new Formula("r");
+			//Formula t = new Formula("t");
 
 			// Itt az első kettőből kijön egy ellentmondás
 			//Formula f1 = p > (-q * r);
@@ -100,26 +100,65 @@ namespace _24f_Formula
 
 
 
-			Formula a = new Formula("a");
-			Formula e = new Formula("b");
-			Formula o = new Formula("c");
-			Formula i = new Formula("i");
-			Formula j = new Formula("j");
-			Formula k = new Formula("k");
+			//Formula a = new Formula("a");
+			//Formula e = new Formula("b");
+			//Formula o = new Formula("c");
+			//Formula i = new Formula("i");
+			//Formula j = new Formula("j");
+			//Formula k = new Formula("k");
+
+			//HashSet<Formula> formulák = new HashSet<Formula>
+			//{
+			//	i==a,
+			//	j==-e,
+			//	k == ((-i*-j*-k) + (i*-j*-k) + (-i*j*-k) + (-i*-j*k)),
+			//	a+e+o,
+			//	(a*-e*-o) + (-a*e*-o) + (-a*-e*o),
+			//};
+
+
+			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(formulák);
+
+			//Formula.Modellek_kiirasa(modellek);
+
+
+
+			Formula m = new Formula("m"); // A dokumentumot megnyitották
+			Formula r = new Formula("r"); // A rendszergazda bejelentkezett
+			Formula k = new Formula("k"); // Valaki megszerezte a hozzáférési kódot
 
 			HashSet<Formula> formulák = new HashSet<Formula>
 			{
-				i==a,
-				j==-e,
-				k == ((-i*-j*-k) + (i*-j*-k) + (-i*j*-k) + (-i*-j*k)),
-				a+e+o,
-				(a*-e*-o) + (-a*e*-o) + (-a*-e*o),
+				m>(-r==k),
+				(-r * k) > m,
+				(m*r) > -k,
+				-r+m,
+				-(k>m),
 			};
-
 
 			HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(formulák);
 
 			Formula.Modellek_kiirasa(modellek);
+
+
+
+
+			//Formula e = new Formula("e"); // Esik az eső
+			//Formula h = new Formula("h"); // A kirándulást elhalasztják
+			//Formula m = new Formula("m"); // A diákok múzeumba mennek
+
+			//HashSet<Formula> formulák = new HashSet<Formula>
+			//{
+			//	e > (h + m),
+			//	h > -m,
+			//	-e > -h,
+			//	h + m,
+			//	-e,
+			//};
+
+			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(formulák);
+
+			//Formula.Modellek_kiirasa(modellek);
 
 
 
@@ -130,35 +169,35 @@ namespace _24f_Formula
 			//Popper<int> ujpopper = 4 + popper;
 			//Popper<int> vadiujpopper = (4,5) + popper;
 
-			Formula A = new Formula("A");
-			Formula B = new Formula("B");
-			Formula C = new Formula("C");
-			Formula D = new Formula("D");
+			//Formula A = new Formula("A");
+			//Formula B = new Formula("B");
+			//Formula C = new Formula("C");
+			//Formula D = new Formula("D");
 
-			HashSet<Formula> formulahalmaz = new HashSet<Formula> { A, B, C, D };
+			//HashSet<Formula> formulahalmaz = new HashSet<Formula> { A, B, C, D };
 
-			Formula.Kielégíthető(formulahalmaz);
+			//Formula.Kielégíthető(formulahalmaz);
 
-			Formula aesb = A * B;
+			//Formula aesb = A * B;
 
-			// (A ∧ B ) →¬(C ∨ D)
+			//// (A ∧ B ) →¬(C ∨ D)
 
-			Formula f = (A * B) > -(A + D);
-
-
-			Console.WriteLine(f);
-
-			Console.WriteLine(f.Negaciok_szama());
-
-			Console.WriteLine(string.Join(", ", f.Atomjai()));
-			Console.WriteLine(string.Join(", ", f.Részformulái()));
-			Console.WriteLine(string.Join(", ", f.Részformulái2()));
+			//Formula f = (A * B) > -(A + D);
 
 
+			//Console.WriteLine(f);
+
+			//Console.WriteLine(f.Negaciok_szama());
+
+			//Console.WriteLine(string.Join(", ", f.Atomjai()));
+			//Console.WriteLine(string.Join(", ", f.Részformulái()));
+			//Console.WriteLine(string.Join(", ", f.Részformulái2()));
 
 
 
-			//együtt.Hogyan_lehet_igaz();
+
+
+			////együtt.Hogyan_lehet_igaz();
 
 
 
