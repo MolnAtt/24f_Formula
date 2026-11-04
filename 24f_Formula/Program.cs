@@ -10,6 +10,9 @@ namespace _24f_Formula
 	{
 		static void Main(string[] args)
 		{
+
+			Formula.Tolatóudvar("-(A*B)>-A+-B");
+
 			//Formula p = new Formula("p");
 			//Formula q = new Formula("q");
 			//Formula r = new Formula("r");

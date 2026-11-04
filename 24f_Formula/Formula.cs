@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,7 +70,17 @@ namespace _24f_Formula
 			return (input.Substring(honnan, i - honnan), i);
 		}
 
-		private static Stack<string> Tolatóudvar(string input)
+		static Dictionary<string, int> precedencia = new Dictionary<string, int>
+		{
+			{ "-", 5 },
+			{ "*", 4 },
+			{ "+", 3 },
+			{ "<", 1 },
+			{ ">", 1 },
+			{ "=", 1 },
+		};
+
+		public static Stack<string> Tolatóudvar(string input)
 		{
 			Stack<string> output = new Stack<string>();
 			Stack<string> opverem = new Stack<string>();
@@ -84,12 +95,52 @@ namespace _24f_Formula
 			{
 				(adat, i) = Beolvas(input, i);
 
-				// innen folytatjuk. 
+				if ("*+->=".Contains(adat))
+				{
+					Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(opverem, output, adat);
+					opverem.Push(adat);
+				}
+				else if (adat == "(")
+				{
+					opverem.Push(adat); // opverem.Push("(");
+				}
+				else if (adat == ")")
+				{
+					Nyitózárójelig_átpakol(opverem, output);
+					opverem.Pop(); // nyitó zárójel kidobása a kukába
+					
+					// ?? gyanús, hogy ide kell valami. 
+
+				}
+				else // egyébként adat = valami atomi formula neve..., pl.: "p", "A", "esik", "vizes", ...
+				{
+					output.Push(adat);
+				}
+				Diagnosztika(input.Substring(i), opverem, output);
 			}
 
-
-
 			return output;
+		}
+
+		private static void Diagnosztika(string input, Stack<string> opverem, Stack<string> output)
+		{
+			Console.WriteLine($"input:   {input}");
+			Console.WriteLine($"opverem: {string.Join(" ", opverem)}");
+			Console.WriteLine($"output:  {string.Join(" ", output)}");
+			Console.WriteLine($"------------------");
+		}
+
+		private static void Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(Stack<string> opverem, Stack<string> output, string adat)
+		{
+			
+			while (opverem.Count > 0 && opverem.Peek() != "(" && precedencia[adat] >= precedencia[opverem.Peek()])
+				output.Push(opverem.Pop());
+		}
+
+		private static void Nyitózárójelig_átpakol(Stack<string> opverem, Stack<string> output)
+		{
+			while (opverem.Peek()!="(")
+				output.Push(opverem.Pop());
 		}
 
 		public static Formula operator -(Formula A)
