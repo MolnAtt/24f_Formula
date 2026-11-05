@@ -25,6 +25,52 @@ namespace _24f_Formula
 			this.gyerekei = new List<Formula>();
 		}
 
+		public static Formula Parse(string input)
+		{
+			Stack<string> verem = Tolatóudvar(input);
+
+			// kifordítás
+
+			Stack<string> v = new Stack<string>();
+			while (0<verem.Count)
+			{
+				v.Push(verem.Pop());
+			}
+			// kifordítás vége, v most a pont jó stringverem
+
+			Stack<Formula> fv = new Stack<Formula>();
+
+			while (0 < v.Count)
+			{
+				string adat = v.Pop();
+
+				switch (adat)
+				{
+					case "-":
+						fv.Push(-(fv.Pop()));
+						break;
+					case "+":
+						fv.Push((fv.Pop() + fv.Pop()));
+						break;
+					case "*":
+						fv.Push((fv.Pop() * fv.Pop()));
+						break;
+					case ">":
+						fv.Push((fv.Pop() > fv.Pop()));
+						break;
+					case "<":
+						fv.Push((fv.Pop() < fv.Pop()));
+						break;
+					case "=":
+						fv.Push((fv.Pop() == fv.Pop()));
+						break;
+					default: // egyébként atomi formula
+						fv.Push(new Formula(adat));
+						break;
+				}
+			}
+			return fv.Peek();
+		}
 
 		static string Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(string input)
 		{

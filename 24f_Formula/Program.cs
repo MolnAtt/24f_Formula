@@ -11,7 +11,10 @@ namespace _24f_Formula
 		static void Main(string[] args)
 		{
 
-			Formula.Tolatóudvar("-(A*B)>-A+-B");
+			//Stack<string> v = Formula.Tolatóudvar("-(A*B)>-A+-B");
+
+			Formula f = Formula.Parse("-(A*B)>-A+-B");
+			Console.WriteLine(f);
 
 			//Formula p = new Formula("p");
 			//Formula q = new Formula("q");
@@ -23,12 +26,10 @@ namespace _24f_Formula
 			//Formula f2 = (p + q) * -(-p + r);
 			//Formula f3 = r == (p + -q);
 
-
 			// Ez nem ellentmondásos: 
 			//Formula f1 = -p + (r == (q * -t));
 			//Formula f2 = -((p + r) > -(q + t));
 			//Formula f3 = -(p == (-q > r));
-
 
 			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2 });
 			//HashSet<Dictionary<Formula, bool>> modellek = Formula.Modelljei(new HashSet<Formula> { f1, f2, f3 });
