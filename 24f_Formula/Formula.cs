@@ -44,25 +44,37 @@ namespace _24f_Formula
 			{
 				string adat = v.Pop();
 
+				// ITT: a verem miatt fordítva lesznek kivéve a formulák, és kifordul minden. Ezt csak így lehet megoldani sajnos:
+				Formula bal;
+				Formula jobb;
 				switch (adat)
 				{
 					case "-":
 						fv.Push(-(fv.Pop()));
 						break;
 					case "+":
-						fv.Push((fv.Pop() + fv.Pop()));
+						jobb = fv.Pop();
+						fv.Push(fv.Pop() + jobb);
 						break;
 					case "*":
-						fv.Push((fv.Pop() * fv.Pop()));
+						jobb = fv.Pop();
+						bal = fv.Pop();
+						fv.Push(bal * jobb);
 						break;
 					case ">":
-						fv.Push((fv.Pop() > fv.Pop()));
+						jobb = fv.Pop();
+						bal = fv.Pop();
+						fv.Push(bal > jobb);
 						break;
 					case "<":
-						fv.Push((fv.Pop() < fv.Pop()));
+						jobb = fv.Pop();
+						bal = fv.Pop();
+						fv.Push(bal < jobb);
 						break;
 					case "=":
-						fv.Push((fv.Pop() == fv.Pop()));
+						jobb = fv.Pop();
+						bal = fv.Pop();
+						fv.Push(bal == jobb);
 						break;
 					default: // egyébként atomi formula
 						fv.Push(new Formula(adat));
@@ -109,7 +121,7 @@ namespace _24f_Formula
 
 			int honnan = i;
 
-			while (!"()*+->=".Contains(input[i]))
+			while (i<input.Length && !"()*+->=".Contains(input[i])) // ITT 2. hiányzott az i<...
 			{
 				i++;
 			}
@@ -165,6 +177,9 @@ namespace _24f_Formula
 				Diagnosztika(input.Substring(i), opverem, output);
 			}
 
+			//while (opverem.Count > 0) // ITT: 3. az operátorokat a végén ki kell üríteni, de nekünk mindig lesz utolsó zárójelünk, ezért nem feltétlen szükséges.
+				//output.Push(opverem.Pop());
+
 			return output;
 		}
 
@@ -179,7 +194,14 @@ namespace _24f_Formula
 		private static void Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(Stack<string> opverem, Stack<string> output, string adat)
 		{
 			
-			while (opverem.Count > 0 && opverem.Peek() != "(" && precedencia[adat] >= precedencia[opverem.Peek()])
+			while (opverem.Count > 0 
+				&& opverem.Peek() != "(" 
+				&& (
+					precedencia[adat] < precedencia[opverem.Peek()]
+					|| 
+					(adat!="-") && precedencia[adat] == precedencia[opverem.Peek()]
+					)
+				) // -- 
 				output.Push(opverem.Pop());
 		}
 
